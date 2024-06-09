@@ -9,7 +9,7 @@ DATE_TIME=$(date +"%Y-%m-%d/%H:%M:%S")
 HOSTNAME=$(hostname)
 #DISTROWITHVERSION=$(lsb_release -a 2>/dev/null | grep Description |sed 's/.*Ubuntu/Ubuntu/')
 # Get Distribution and Version
-DISTROWITHVERSION=$(cat /etc/os-release | grep PRETTY_NAME|sed 's/.*"\(.*\)".*/\1/')
+DISTROWITHVERSION=$(< /etc/os-release grep PRETTY_NAME|sed 's/.*"\(.*\)".*/\1/')
 # Get Uptime
 UPTIME=$(uptime|awk '{print $1}')
 
@@ -27,8 +27,8 @@ echo "Uptime: $UPTIME"
 # Get CPU Information
 CPUINFO=$(lscpu | grep "Model name"|sed 's/Model name:\s*//')
 # Get Maxium and Current CPU Speed. 
-CURSPD=$(cat /proc/cpuinfo | grep MHz | sort -n -k 4 | head -n 1 | sed 's/.*: //')"MHz(Current)"
-MAXSPD=$(cat /proc/cpuinfo | grep MHz | sort -r -k 4 | head -n 1 | sed 's/.*: //')"MHz(Maximum)"
+CURSPD=$(< /proc/cpuinfo grep MHz | sort -n -k 4 | head -n 1 | sed 's/.*: //')"MHz(Current)"
+MAXSPD=$(< /proc/cpuinfo grep MHz | sort -r -k 4 | head -n 1 | sed 's/.*: //')"MHz(Maximum)"
 # Get Memory Size 
 RAMSIZE=$(free -h | grep Mem | awk '{print $2}')
 # Get Video Information
@@ -37,7 +37,7 @@ VIDEOINFO=$(lspci | grep -i "VGA" | sed 's/.*controller: //')
 echo
 echo "Hardware Information"
 echo "--------------------"
-etcho "cpu: $CPUINFO"
+echo "cpu: $CPUINFO"
 echo "Speed: $CURSPD $MAXSPD"
 echo "Ram: $RAMSIZE"
 
@@ -80,21 +80,17 @@ HostIP=$(sudo lshw -class network | grep configuration | awk -F'ip=' '{print $2}
 # Get Gateway IP address
 GateIP=$(ip route | awk '/via/ {print $3}')
 
-# Get Network Interface Resource Name
-# 1, grep: find the rows of resource name; 2, grep: exclude loopback; 3, awk: get the second colum, the string of resouce name; 4, sed: delete the ":" in the resource namestring. 
-NETADAPTERNAMES=$(ip a | grep '^[0-9]*:'| grep -v "lo"|awk '{print $2}'|sed 's/://')
-
 # Get DNS Server IP Address
 # 1, awk: find the row of nameserver and get the second column, the IP address of the DNS Server.
-DNSIP=$(cat /etc/resolv.conf|awk '/nameserver/ {print $2}')
+DNSIP=$(< /etc/resolv.conf awk '/nameserver/ {print $2}')
 
 echo
 echo "Network Information"
 echo "-------------------"
-echo "FQDN: "$FQNDInfo
-echo "Hot Address: "$HostIP
-echo "Gteway: "$GateIP
-echo "DNS Server: "$DNSIP
+echo "FQDN: $FQNDInfo"
+echo "Hot Address: $HostIP"
+echo "Gteway: $GateIP"
+echo "DNS Server: $DNSIP"
 
 # get the Network Interface Manufactory Names
 # 1, awk: find the rows of the vendor; 2, get the string after the "vendor:" by for loop. 
@@ -111,6 +107,11 @@ NETDNAME1=$(sudo lshw -class network | awk '/logical name:/ {print $3","}')
 # The ip addresses come from the command of 'ip a' and the network interface hardware informaton comes from the command of ‘lshw’
 # I use array to associate the ip adress with the hardware information 
 # 1, output the three strings to three new variables. I don't why I failed when I deal with the three original strings directly.
+
+#NETDNAME=$NETDNAME1
+#NETDMAKE=$NETDMAKE1
+#DEVMODEL=$DEVMODEL1
+
 NETDNAME=$(echo $NETDNAME1)
 NETDMAKE=$(echo $NETDMAKE1)
 DEVMODEL=$(echo $DEVMODEL1)
@@ -123,13 +124,14 @@ IFS=',' read -r -a netmodel_array <<< "$DEVMODEL"
 # 3, output the information and ip adress of each network interface.
 for (( i=0; i<${#netname_array[@]}; i++ )); do
      echo "Network Interface [$i]:"
-     echo -e "\tMake: "${netmake_array[$i]}
-     echo -e "\tModel: "${netmodel_array[$i]}
-     echo -e "\tName: "${netname_array[$i]}
+     echo -e "\tMake: ${netmake_array[$i]}"
+     echo -e "\tModel: ${netmodel_array[$i]}"
+     echo -e "\tName: ${netname_array[$i]}"
 # 4, 1) grep: select the section by resouce name of the network interface; 2) awk: get the ipv4 and ipv4 adress 
-     IPAddr=$(ip a|grep "${netname_array[$i]}" -A 3|awk '/inet / {print $2} /inet6/ {print $2}')
+     IPAddr=$(ip a|grep "${netname_array[$i]}" -A 3|awk '/inet / {print "\tIP: "$2} /inet6/ {print "\tIPv6: "$2}')
+#     echo "$IPAddr"	
      if [ -n "$IPAddr" ]; then
-          echo -e  "\tIP Address(CIDR): "$IPAddr
+          echo -e  "\tIP Address(CIDR): \n $IPAddr"
      else
           echo -e "\tNO IP Address"
      fi
@@ -143,10 +145,11 @@ echo "------------"
 # 1, awk: combine the first columns, the user name, to a row and the user names are separated by ",".
 USRLIST=$(who|awk '{printf "%s, ", $1} END {print ""}')
 # 2, output the user list to a new variable. I don't why I failed when I deal with the string directly.
-USRLIST1=$(echo $USRLIST)
+#USRLIST1=$(echo $USRLIST)
 # 3, delete the last "," which is at the end of the user list
-USRLIST1=${USRLIST1%?}
-echo "Users Logged In: "$USRLIST1
+#USRLIST1=${USRLIST1%?}
+#echo "Users Logged In: $USRLIST1"
+echo "Users Logged In: ${USRLIST%??}"
 
 # get disk avaliable space information of each mount point 
 echo "Disk Space: "
@@ -157,12 +160,12 @@ df -h | awk 'BEGIN {printf "%-20s %s\n", "Mount Point", "Available Space(Bytes)"
 #Process Count: N
 # 1, wc: count the row number.
 PROCCNT=$(ps aux | wc -l)
-echo "Process Count: "$PROCCNT
+echo "Process Count: $PROCCNT"
 
 #Load Averages: N, N, N
 # 1, awk: get the string after "load average:"
 LOADAVE=$(uptime|awk -F 'load average:' '{print $2}')
-echo "Load Averages: "$LOADAVE
+echo "Load Averages: $LOADAVE"
 
 #Memory information
 # 1, awk: find the row which is begin with "Men", and then output the second, third and fourth cloumns.
@@ -171,28 +174,26 @@ free -h | awk '/^Mem:/ {print "Memory Total: " $2, "Used: " $3, "Free: " $4}'
 #Listening ports. The tcp and udp ports should be displayed individually.
 echo "Listening Network Ports: "
 # Get upd port list
-# 1, awk: find the row of udp; 2, awk: get the port which is after ":"; 3, sort: sort the ports; 4, awk: print the ports in one row.
-PORTINFO=$(netstat -tuln | awk '/^udp/ {print "udp:"$4}'| awk -F ':' '{print $1" "$NF}'|sort -n  -k2| awk 'BEGIN {printf "%s", "UDP Ports: "} {printf "%s, ", $2} END {print ""}')
+# 1, awk: find the row of udp; 2, awk: get the port which is after ":"; 3, sort: sort the ports; 4, uniq: delete duplicate item; 5, awk: print the ports in one row.
+PORTINFO=$(netstat -tuln | awk '/^udp/ {print "udp:"$4}'| awk -F ':' '{print $1" "$NF}'|sort -n  -k2| uniq | awk 'BEGIN {printf "%s", "UDP Ports: "} {printf "%s, ", $2} END {print ""}')
+echo "${PORTINFO%??}"
 # 2, output the port list to a new variable. I don't why I failed when I deal with the string directly.
-PORTINFO1=$(echo $PORTINFO)
+#PORTINFO1=$(echo "$PORTINFO")
 # 3, delete the last "," which is at the end of the user list
-PORTINFO1=${PORTINFO1%?}
-echo $PORTINFO1
+#PORTINFO1=${PORTINFO1%?}
+#echo "$PORTINFO1"
 
 #Get tcp port list
-# 1, awk: find the row of tcp; 2, awk: get the port which is after ":"; 3, sort: sort the ports; 4, awk: print the ports in one row.
-PORTINFO=$(netstat -tuln | awk '/^tcp/ {print "tcp:"$4}'| awk -F ':' '{print $1" "$NF}'|sort -n  -k2| awk 'BEGIN {printf "%s", "TCP Ports: "} {printf "%s, ", $2} END {print ""}')
+# 1, awk: find the row of tcp; 2, awk: get the port which is after ":"; 3, sort: sort the ports; 4, uniq: delete duplicate item; 5, awk: print the ports in one row.
+PORTINFO=$(netstat -tuln | awk '/^tcp/ {print "tcp:"$4}'| awk -F ':' '{print $1" "$NF}'|sort -n  -k2| uniq | awk 'BEGIN {printf "%s", "TCP Ports: "} {printf "%s, ", $2} END {print ""}')
+echo "${PORTINFO%??}"
 # 2, output the port list to a new variable. I don't why I failed when I deal with the string directly.
-PORTINFO1=$(echo $PORTINFO)
+#PORTINFO1=$(echo "$PORTINFO")
 # 3, delete the last "," which is at the end of the user list
-PORTINFO1=${PORTINFO1%?}
-echo $PORTINFO1
+#PORTINFO1=${PORTINFO1%?}
+#echo "$PORTINFO1"
 
 #UFW Rules: DATA FROM UFW SHOW
 echo "UFW Rules: "
 # 1, sed: delete the second row to display more consicely.
 sudo ufw status | sed 2d
-
-
-
-

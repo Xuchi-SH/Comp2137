@@ -7,10 +7,10 @@ USERNAME=$(whoami)
 DATE_TIME=$(date +"%Y-%m-%d/%H:%M:%S")
 # Get the current hostname
 HOSTNAME=$(hostname)
-#DISTROWITHVERSION=$(lsb_release -a 2>/dev/null | grep Description |sed 's/.*Ubuntu/Ubuntu/')
 # Get Distribution and Version
 DISTROWITHVERSION=$(< /etc/os-release grep PRETTY_NAME|sed 's/.*"\(.*\)".*/\1/')
 # Get Uptime
+# 1, awk: the fist column is the string of the time.
 UPTIME=$(uptime|awk '{print $1}')
 
 
@@ -25,13 +25,17 @@ echo "Uptime: $UPTIME"
 
 #=========================Hardware Information Section=================================
 # Get CPU Information
+# 1, grep: find the row containing the Model information; 2, sed: delete the useless characters. 
 CPUINFO=$(lscpu | grep "Model name"|sed 's/Model name:\s*//')
 # Get Maxium and Current CPU Speed. 
+# 1, grep: find the rows containg speed information; 2，sort: sort the speeds; 3, head: select the first row; 4, delete useless characters.
 CURSPD=$(< /proc/cpuinfo grep MHz | sort -n -k 4 | head -n 1 | sed 's/.*: //')"MHz(Current)"
 MAXSPD=$(< /proc/cpuinfo grep MHz | sort -r -k 4 | head -n 1 | sed 's/.*: //')"MHz(Maximum)"
 # Get Memory Size 
+# 1, grep: select the row containing memory information; 2, awk: select the second column, the string of memory size.
 RAMSIZE=$(free -h | grep Mem | awk '{print $2}')
 # Get Video Information
+# 1, grep: select the row containing the VIDEO device information; 2, sed: delect uesless characters.
 VIDEOINFO=$(lspci | grep -i "VGA" | sed 's/.*controller: //')
 
 echo
@@ -89,9 +93,9 @@ echo "Network Information"
 echo "-------------------"
 echo "FQDN: $FQNDInfo"
 echo "Hot Address: $HostIP"
-echo "Gteway: $GateIP"
+echo "Gateway IP: $GateIP"
 echo "DNS Server: $DNSIP"
-
+echo
 # get the Network Interface Manufactory Names
 # 1, awk: find the rows of the vendor; 2, get the string after the "vendor:" by for loop. 
 NETDMAKE1=$(sudo lshw -class network | awk '/vendor:/ {VENDER=""; for (i=2; i<=NF; i++) VENDER=VENDER$i" "; print VENDER","}')
@@ -128,7 +132,7 @@ for (( i=0; i<${#netname_array[@]}; i++ )); do
      echo -e "\tModel: ${netmodel_array[$i]}"
      echo -e "\tName: ${netname_array[$i]}"
 # 4, 1) grep: select the section by resouce name of the network interface; 2) awk: get the ipv4 and ipv4 adress 
-     IPAddr=$(ip a|grep "${netname_array[$i]}" -A 3|awk '/inet / {print "\tIP: "$2} /inet6/ {print "\tIPv6: "$2}')
+     IPAddr=$(ip a|grep "${netname_array[$i]}" -A 3|awk '/inet / {print "\t"$2} /inet6/ {print "\t"$2}')
 #     echo "$IPAddr"	
      if [ -n "$IPAddr" ]; then
           echo -e  "\tIP Address(CIDR): \n $IPAddr"
@@ -144,11 +148,6 @@ echo "------------"
 # get user list
 # 1, awk: combine the first columns, the user name, to a row and the user names are separated by ",".
 USRLIST=$(who|awk '{printf "%s, ", $1} END {print ""}')
-# 2, output the user list to a new variable. I don't why I failed when I deal with the string directly.
-#USRLIST1=$(echo $USRLIST)
-# 3, delete the last "," which is at the end of the user list
-#USRLIST1=${USRLIST1%?}
-#echo "Users Logged In: $USRLIST1"
 echo "Users Logged In: ${USRLIST%??}"
 
 # get disk avaliable space information of each mount point 
@@ -176,22 +175,14 @@ echo "Listening Network Ports: "
 # Get upd port list
 # 1, awk: find the row of udp; 2, awk: get the port which is after ":"; 3, sort: sort the ports; 4, uniq: delete duplicate item; 5, awk: print the ports in one row.
 PORTINFO=$(netstat -tuln | awk '/^udp/ {print "udp:"$4}'| awk -F ':' '{print $1" "$NF}'|sort -n  -k2| uniq | awk 'BEGIN {printf "%s", "UDP Ports: "} {printf "%s, ", $2} END {print ""}')
+# delete the "," at the end of the string.
 echo "${PORTINFO%??}"
-# 2, output the port list to a new variable. I don't why I failed when I deal with the string directly.
-#PORTINFO1=$(echo "$PORTINFO")
-# 3, delete the last "," which is at the end of the user list
-#PORTINFO1=${PORTINFO1%?}
-#echo "$PORTINFO1"
 
 #Get tcp port list
 # 1, awk: find the row of tcp; 2, awk: get the port which is after ":"; 3, sort: sort the ports; 4, uniq: delete duplicate item; 5, awk: print the ports in one row.
 PORTINFO=$(netstat -tuln | awk '/^tcp/ {print "tcp:"$4}'| awk -F ':' '{print $1" "$NF}'|sort -n  -k2| uniq | awk 'BEGIN {printf "%s", "TCP Ports: "} {printf "%s, ", $2} END {print ""}')
+# delete the "," at the end of the string.
 echo "${PORTINFO%??}"
-# 2, output the port list to a new variable. I don't why I failed when I deal with the string directly.
-#PORTINFO1=$(echo "$PORTINFO")
-# 3, delete the last "," which is at the end of the user list
-#PORTINFO1=${PORTINFO1%?}
-#echo "$PORTINFO1"
 
 #UFW Rules: DATA FROM UFW SHOW
 echo "UFW Rules: "

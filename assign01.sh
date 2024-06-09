@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#clean the screen and input the sudo password at the beginning.
+sudo clear
+
 #=========================System Information Section=================================
 # Get the current username
 USERNAME=$(whoami)
@@ -26,7 +29,8 @@ echo "Uptime: $UPTIME"
 #=========================Hardware Information Section=================================
 # Get CPU Information
 # 1, grep: find the row containing the Model information; 2, sed: delete the useless characters. 
-CPUINFO=$(lscpu | grep "Model name"|sed 's/Model name:\s*//')
+CPUMAKE=$(lscpu | grep "Vendor ID:"|sed 's/Vendor ID:\s*//')
+CPUMODEL=$(lscpu | grep "Model name"|sed 's/Model name:\s*//')
 # Get Maxium and Current CPU Speed. 
 # 1, grep: find the rows containg speed information; 2，sort: sort the speeds; 3, head: select the first row; 4, delete useless characters.
 CURSPD=$(< /proc/cpuinfo grep MHz | sort -n -k 4 | head -n 1 | sed 's/.*: //')"MHz(Current)"
@@ -41,32 +45,32 @@ VIDEOINFO=$(lspci | grep -i "VGA" | sed 's/.*controller: //')
 echo
 echo "Hardware Information"
 echo "--------------------"
-echo "cpu: $CPUINFO"
+echo "CPU MAKE: $CPUMAKE  MODEL: $CPUMODEL"
 echo "Speed: $CURSPD $MAXSPD"
 echo "Ram: $RAMSIZE"
 
 echo "Disk(s):"
 # Get the harddisk information
 # 1, grep: get the section of each harddisk
-# 2, 1) awk: get the disk type, manufacturer, logcial name and size by the key words of description, vendor, logical name and size
+# 2, 1) awk: get the disk type, manufacturer, model, logcial name and size by the key words of description, vendor, product, logical name and size
 #    2) output format: title row, then disk information rows
 sudo lshw -c disk | grep 'SCSI Disk' -A 9 | awk '
 
 BEGIN {
     # Print the header
-#    printf "%-20s %-20s %-20s %-20s\n", "Description", "Vendor", "Logical Name", "Size"
-   printf "%-12s %-10s %-12s %-10s\n", "Disk Type", "Vendor", "Name", "Size"
+    printf "%-20s %-10s %-12s %-10s\n", "   Model", " Make", " Name", " Size"
 }
+
 
 /description/ {desc = $2 " " $3}
 /vendor:/ {vendor = substr($2, 1, length($2) - 1)}
+/product:/ {for (i=2; i<=NF; i++) hdmodel=hdmodel " " $i;}
 /logical name:/ {name = $3}
 /size:/ {size = $2}
 {
-    if (desc && vendor && name && size) {
-#       printf "%-20s %-20s %-20s %-20s\n", desc, vendor, name, size
-        printf "%-12s %-10s %-12s %-10s\n", desc, vendor, name, size
-        desc = vendor = name = size = ""
+    if (desc && vendor && name && size && hdmodel) {
+        printf "%-20s %-10s %-12s %-10s\n", hdmodel, vendor, name, size
+        desc = vendor = name = size = hdmodel = ""
     }
 }'
 
@@ -94,7 +98,6 @@ echo "FQDN: $FQNDInfo"
 echo "Host Address: ${HostIP%??}"
 echo "Gateway IP: ${GateIP%??}"
 echo "DNS Server: $DNSIP"
-echo
 # get the Network Interface Manufactory Names
 # 1, awk: find the rows of the vendor; 2, get the string after the "vendor:" by for loop. 
 NETDMAKE1=$(sudo lshw -class network | awk '/vendor:/ {VENDER=""; for (i=2; i<=NF; i++) VENDER=VENDER$i" "; print VENDER","}')
@@ -152,7 +155,7 @@ echo "Users Logged In: ${USRLIST%??}"
 # get disk avaliable space information of each mount point 
 echo "Disk Space: "
 # 1, awk: 1)print the title row; 2)output the 6th and 4th columns.
-df -h | awk 'BEGIN {printf "%-20s %s\n", "Mount Point", "Available Space(Bytes)"} NR>1 {printf "%-20s %s\n", $6, $4}'
+df -h | awk 'BEGIN {printf " %-20s %s\n", "Mount Point", "Available Space(Bytes)"} NR>1 {printf " %-20s %s\n", $6, $4}'
 
 
 #Process Count: N
@@ -163,11 +166,11 @@ echo "Process Count: $PROCCNT"
 #Load Averages: N, N, N
 # 1, awk: get the string after "load average:"
 LOADAVE=$(uptime|awk -F 'load average:' '{print $2}')
-echo "Load Averages: $LOADAVE"
+echo "Load Averages:$LOADAVE"
 
 #Memory information
 # 1, awk: find the row which is begin with "Men", and then output the second, third and fourth cloumns.
-free -h | awk '/^Mem:/ {print "Memory Total: " $2, "Used: " $3, "Free: " $4}'
+free -h | awk '/^Mem:/ {print "Memory Allocation  Total: " $2, "Used: " $3, "Free: " $4}'
 
 #Listening ports. The tcp and udp ports should be displayed individually.
 echo "Listening Network Ports: "
@@ -175,15 +178,15 @@ echo "Listening Network Ports: "
 # 1, awk: find the row of udp; 2, awk: get the port which is after ":"; 3, sort: sort the ports; 4, uniq: delete duplicate item; 5, awk: print the ports in one row.
 PORTINFO=$(netstat -tuln | awk '/^udp/ {print "udp:"$4}'| awk -F ':' '{print $1" "$NF}'|sort -n  -k2| uniq | awk 'BEGIN {printf "%s", "UDP Ports: "} {printf "%s, ", $2} END {print ""}')
 # delete the "," at the end of the string.
-echo "${PORTINFO%??}"
+echo " ${PORTINFO%??}"
 
 #Get tcp port list
 # 1, awk: find the row of tcp; 2, awk: get the port which is after ":"; 3, sort: sort the ports; 4, uniq: delete duplicate item; 5, awk: print the ports in one row.
 PORTINFO=$(netstat -tuln | awk '/^tcp/ {print "tcp:"$4}'| awk -F ':' '{print $1" "$NF}'|sort -n  -k2| uniq | awk 'BEGIN {printf "%s", "TCP Ports: "} {printf "%s, ", $2} END {print ""}')
 # delete the "," at the end of the string.
-echo "${PORTINFO%??}"
+echo " ${PORTINFO%??}"
 
 #UFW Rules: DATA FROM UFW SHOW
 echo "UFW Rules: "
-# 1, sed: delete the second row to display more consicely.
-sudo ufw status | sed 2d
+# 1, sed: delete the second row to display more consicely; 2, sed: add a space at the beginning of each row. 
+sudo ufw status | sed 2d | sed 's/^/ /'

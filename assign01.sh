@@ -136,7 +136,7 @@ for (( i=0; i<${#netname_array[@]}; i++ )); do
      if [ -n "$IPAddr" ]; then
           echo -e  "\tIP Address(CIDR): ${IPAddr%??}"
      else
-          echo -e "NO IP Address"
+          echo -e "\tNO IP Address"
      fi
 done
 

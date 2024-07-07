@@ -69,14 +69,15 @@ echo "192.168.16.21 server1" >> /etc/hosts
 # Install apache2 and squid
 log "Installing apache2 and squid..."
 apt-get update
+apt-get -y upgrade
+apt-get install -y apache2 squid
+
 # Start and enable apache2 and squid
 log "Starting and enabling apache2 and squid..."
 systemctl enable apache2
 systemctl start apache2
 systemctl enable squid
 systemctl start squid
-apt-get -y upgrade
-apt-get install -y apache2 squid
 
 
 # Configure UFW firewall

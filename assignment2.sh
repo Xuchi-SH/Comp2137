@@ -86,7 +86,7 @@ apt install ufw -y
 systemctl enable ufw
 systemctl start ufw
 
-ufw enable 
+sudo ufw --force enable 
 
 ufw allow in on eth0 to any port 22
 ufw allow in on eth1 to any port 22

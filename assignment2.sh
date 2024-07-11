@@ -89,6 +89,7 @@ systemctl start ufw
 ufw enable 
 
 ufw allow in on eth0 to any port 22
+ufw allow in on eth1 to any port 22
 ufw allow in on eth0 to any port 80
 ufw allow in on eth0 to any port 8080
 ufw allow in on eth0 to any port 3128

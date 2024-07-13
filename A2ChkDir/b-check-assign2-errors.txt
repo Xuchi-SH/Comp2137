@@ -1,0 +1,14 @@
+sh: 1: cat/etc/netplan/*: not found
+Error: Command not found
+WARNING:root:Cannot call Open vSwitch: ovsdb-server.service is not running.
+WARNING:root:Cannot call Open vSwitch: ovsdb-server.service is not running.
+Synchronizing state of apache2.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install enable apache2
+Synchronizing state of squid.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install enable squid
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Synchronizing state of ufw.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install enable ufw
+WARNING:root:Cannot call Open vSwitch: ovsdb-server.service is not running.

@@ -48,56 +48,11 @@ modify_netplan_file() {
 	netplan apply
 }
 
-if [ -f "$NETPLAN_CONFIG" ]; then
-	if grep -q "addresses: \[${MATCH_IP}.*\/24\]" $NETPLAN_CONFIG; then
-		modify_netplan_file
-	else
-		echo "No matching IP address found in the existing configuration. Creating a new configuration file..."
-		create_netplan_file
-	fi
-else
-	create_netplan_file
-fi
-
-echo "Network configuration updated successfully."
-
-# Update /etc/hosts
-log "Updating /etc/hosts..."
-sed -i '/server1/d' /etc/hosts
-echo "192.168.16.21 server1" >> /etc/hosts
-
-# Install apache2 and squid
-log "Installing apache2 and squid..."
-apt-get update
-apt-get -y upgrade
-apt-get install -y apache2 squid
-
-# Start and enable apache2 and squid
-log "Starting and enabling apache2 and squid..."
-systemctl enable apache2
-systemctl start apache2
-systemctl enable squid
-systemctl start squid
-
-
-# Configure UFW firewall
-log "Configuring UFW firewall..."
-apt install ufw -y
-systemctl enable ufw
-systemctl start ufw
-
-ufw allow in on eth0 to any port 22
-ufw allow in on eth0 to any port 80
-ufw allow in on eth0 to any port 8080
-ufw allow in on eth0 to any port 3128
-ufw allow in on eth1 to any port 80
-ufw allow in on eth1 to any port 8080
-ufw allow in on eth1 to any port 3128
 
 # List of users
 
 
-usernames=("dennis" "aubrey" "captain" "snibbles" "brownie" "scooter" "sandy" "perrier" "cindy" "tiger" "yoda")
+usernames=("dennis" "aubrey" "yoda")
 declare -A pulic_keys
 
 pulic_keys["dennis"]="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG4rT3vTt99Ox5kndS4HmgTrKBT8SKzhK4rhGkEVGlCI student@generic-vm"
@@ -118,7 +73,11 @@ for username in "${usernames[@]}"; do
     cat "/home/$username/.ssh/id_rsa.pub" >> "/home/$username/.ssh/authorized_keys"
     cat "/home/$username/.ssh/id_ed25519.pub" >> "/home/$username/.ssh/authorized_keys"
 	if [ "$username" == "dennis" ]; then
-		echo "${ssh_keys[$username]}" >> "/home/$username/.ssh/authorized_keys"	
+		echo "user: ""$username"
+		echo "key :""${ssh_keys[$username]}"
+		echo "/home/$username/.ssh/authorized_keys"
+		echo "${public_keys[$username]}" >> "/home/$username/.ssh/authorized_keys"	
+		echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG4rT3vTt99Ox5kndS4HmgTrKBT8SKzhK4rhGkEVGlCI student@generic-vm" >> "/home/$username/.ssh/authorized_keys"	
 		usermod -aG sudo $username
 	fi
 	chmod 600 /home/$username/.ssh/authorized_keys

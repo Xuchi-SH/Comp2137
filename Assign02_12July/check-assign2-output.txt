@@ -1,0 +1,18 @@
+---Host/Student info----
+
+Running on Sat 13 Jul 2024 06:20:11 AM EDT
+Run by chxu - () on host
+ Static hostname: generic-vm
+      Machine ID: 043bae43928f47768378815083c15303
+Operating System: Ubuntu 22.04.4 LTS
+23454e7f1c80da61b69217db1155bf18  ./check-assign2-script.sh - 23454e7f1c80da61b69217db1155bf18  -
+------------------------
+
+---Start of Assignment2.sh Check------
+---Running makecontainers.sh----------
+This script performs many tasks. Please be patient
+To see more about what it is doing as it does it, use the --verbose option
+Network lan deleted
+Network mgmt deleted
+Network lan created
+Network mgmt created

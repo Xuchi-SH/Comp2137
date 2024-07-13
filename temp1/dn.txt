@@ -1,0 +1,88 @@
+  *-disk:0
+       description: SCSI Disk
+       product: VMware Virtual S
+       vendor: VMware,
+       physical id: 0.0.0
+       bus info: scsi@21:0.0.0
+       logical name: /dev/sda
+       version: 1.0
+       size: 40GiB (42GB)
+       capabilities: 7200rpm gpt-1.00 partitioned partitioned:gpt
+       configuration: ansiversion=2 guid=91d30364-aa0b-4bcd-a088-27abb46bb400 logicalsectorsize=512 sectorsize=512
+  *-disk:1
+       description: SCSI Disk
+       product: VMware Virtual S
+       vendor: VMware,
+       physical id: 0.1.0
+       bus info: scsi@21:0.1.0
+       logical name: /dev/sdb
+       version: 1.0
+       size: 10GiB (10GB)
+       capabilities: 7200rpm gpt-1.00 partitioned partitioned:gpt
+       configuration: ansiversion=2 guid=bf9c8c1a-d909-40ca-9252-f696199846df logicalsectorsize=512 sectorsize=512
+  *-network:0
+       description: Ethernet interface
+       product: 82545EM Gigabit Ethernet Controller (Copper)
+       vendor: Intel Corporation
+       physical id: 1
+       bus info: pci@0000:02:01.0
+       logical name: ens33
+       version: 01
+       serial: 00:0c:29:27:60:8a
+       size: 1Gbit/s
+       capacity: 1Gbit/s
+       width: 64 bits
+       clock: 66MHz
+       capabilities: pm pcix bus_master cap_list rom ethernet physical logical tp 10bt 10bt-fd 100bt 100bt-fd 1000bt-fd autonegotiation
+       configuration: autonegotiation=on broadcast=yes driver=e1000 driverversion=6.5.0-35-generic duplex=full ip=192.168.142.156 latency=0 link=yes mingnt=255 multicast=yes port=twisted pair speed=1Gbit/s
+       resources: irq:19 memory:fd5c0000-fd5dffff memory:fdff0000-fdffffff ioport:2000(size=64) memory:fd500000-fd50ffff
+  *-network:1
+       description: Ethernet interface
+       product: 82545EM Gigabit Ethernet Controller (Copper)
+       vendor: Intel Corporation
+       physical id: 2
+       bus info: pci@0000:02:02.0
+       logical name: ens34
+       version: 01
+       serial: 00:0c:29:27:60:94
+       size: 1Gbit/s
+       capacity: 1Gbit/s
+       width: 64 bits
+       clock: 66MHz
+       capabilities: pm pcix bus_master cap_list rom ethernet physical logical tp 10bt 10bt-fd 100bt 100bt-fd 1000bt-fd autonegotiation
+       configuration: autonegotiation=on broadcast=yes driver=e1000 driverversion=6.5.0-35-generic duplex=full latency=0 link=yes mingnt=255 multicast=yes port=twisted pair speed=1Gbit/s
+       resources: irq:16 memory:fd5a0000-fd5bffff memory:fdfe0000-fdfeffff ioport:2040(size=64) memory:fd510000-fd51ffff
+  *-cdrom:0
+       description: DVD-RAM writer
+       product: VMware SATA CD00
+       vendor: NECVMWar
+       physical id: 0
+       bus info: scsi@2:0.0.0
+       logical name: /dev/cdrom
+       logical name: /dev/sr0
+       logical name: /media/chxu/CDROM
+       version: 1.00
+       capabilities: removable audio cd-r cd-rw dvd dvd-r dvd-ram
+       configuration: ansiversion=5 mount.fstype=iso9660 mount.options=ro,nosuid,nodev,relatime,nojoliet,check=s,map=n,blocksize=2048,uid=1002,gid=1002,dmode=500,fmode=400,iocharset=utf8 state=mounted status=ready
+     *-medium
+          physical id: 0
+          logical name: /dev/cdrom
+          logical name: /media/chxu/CDROM
+          configuration: mount.fstype=iso9660 mount.options=ro,nosuid,nodev,relatime,nojoliet,check=s,map=n,blocksize=2048,uid=1002,gid=1002,dmode=500,fmode=400,iocharset=utf8 state=mounted
+  *-cdrom:1
+       description: DVD-RAM writer
+       product: VMware SATA CD01
+       vendor: NECVMWar
+       physical id: 1
+       bus info: scsi@3:0.0.0
+       logical name: /dev/sr1
+       logical name: /media/chxu/Ubuntu 22.04.4 LTS amd64
+       version: 1.00
+       capabilities: removable audio cd-r cd-rw dvd dvd-r dvd-ram
+       configuration: ansiversion=5 mount.fstype=iso9660 mount.options=ro,nosuid,nodev,relatime,nojoliet,check=s,map=n,blocksize=2048,uid=1002,gid=1002,dmode=500,fmode=400,iocharset=utf8 state=mounted status=ready
+     *-medium
+          physical id: 0
+          logical name: /dev/sr1
+          logical name: /media/chxu/Ubuntu 22.04.4 LTS amd64
+          capabilities: gpt-1.00 partitioned partitioned:gpt
+          configuration: guid=abbd44c4-640c-4cea-accb-ca38273f602e mount.fstype=iso9660 mount.options=ro,nosuid,nodev,relatime,nojoliet,check=s,map=n,blocksize=2048,uid=1002,gid=1002,dmode=500,fmode=400,iocharset=utf8 state=mounted

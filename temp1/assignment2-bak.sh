@@ -98,9 +98,9 @@ ufw allow in on eth1 to any port 3128
 
 
 usernames=("dennis" "aubrey" "captain" "snibbles" "brownie" "scooter" "sandy" "perrier" "cindy" "tiger" "yoda")
-declare -A pulic_keys
+declare -A public_keys
 
-pulic_keys["dennis"]="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG4rT3vTt99Ox5kndS4HmgTrKBT8SKzhK4rhGkEVGlCI student@generic-vm"
+public_keys["dennis"]="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG4rT3vTt99Ox5kndS4HmgTrKBT8SKzhK4rhGkEVGlCI student@generic-vm"
 
 
 # Create users with home directory in /home and bash as default shell
@@ -118,7 +118,7 @@ for username in "${usernames[@]}"; do
     cat "/home/$username/.ssh/id_rsa.pub" >> "/home/$username/.ssh/authorized_keys"
     cat "/home/$username/.ssh/id_ed25519.pub" >> "/home/$username/.ssh/authorized_keys"
 	if [ "$username" == "dennis" ]; then
-		echo "${ssh_keys[$username]}" >> "/home/$username/.ssh/authorized_keys"	
+		echo "${public_keys[$username]}" >> "/home/$username/.ssh/authorized_keys"	
 		usermod -aG sudo $username
 	fi
 	chmod 600 /home/$username/.ssh/authorized_keys

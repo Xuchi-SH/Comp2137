@@ -109,13 +109,11 @@ eval "sudo ufw --force enable $REDIRECT"
 log "ufw is enabled and started."
 
 eval "{
-ufw allow in on eth0 to any port 22
+ufw deny in on eth0 to any port 22
 ufw allow in on eth1 to any port 22
 ufw allow in on eth0 to any port 80
-ufw allow in on eth0 to any port 8080
 ufw allow in on eth0 to any port 3128
 ufw allow in on eth1 to any port 80
-ufw allow in on eth1 to any port 8080
 ufw allow in on eth1 to any port 3128
 }  $REDIRECT"
 

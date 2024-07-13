@@ -18,9 +18,11 @@ error() {
 NETPLAN_CONFIG="/etc/netplan/10-lxc.yaml"
 NEW_IP="192.168.16.21/24"
 MATCH_IP="192.168.16."
+REDIRECT="> /dev/null 2>&1"
+#"> /dev/null 2>&1"
 
 create_netplan_file() {
-	echo "Creating new netplan configuration file..."
+	log "Creating new netplan configuration file..."
 	cat <<EOF > $NETPLAN_CONFIG
 network:
 	version: 2
@@ -36,16 +38,13 @@ network:
 		eth1:
 			addresses: [172.16.1.200/24]
 EOF
-	netplan apply
+	eval "netplan apply  $REDIRECT"
 }
 
 modify_netplan_file() {
-	echo "Modifying existing netplan configuration file..."
-#    sed -i "/addresses: \[${MATCH_IP}.*\/24\]/c\            addresses: [$NEW_IP]" $NETPLAN_CONFIG
-#	sed -i "s/addresses: \[${MATCH_IP}.*\/24/addresses: [$NEW_IP]/g" $NETPLAN_CONFIG
-#	sed -i "s#addresses: \[192.168.16.*\/24]/addresses: [$NEW_IP]/g" "/etc/netplan/10-lxc.yaml"
+	log "Modifying existing netplan configuration file..."
 	sed -i "s#addresses: \[192.168.16.*\/24]#addresses: \[$NEW_IP]#g" "/etc/netplan/10-lxc.yaml"			
-	netplan apply
+	eval "netplan apply  $REDIRECT"
 }
 
 if [ -f "$NETPLAN_CONFIG" ]; then
@@ -59,7 +58,7 @@ else
 	create_netplan_file
 fi
 
-echo "Network configuration updated successfully."
+log "Network configuration updated successfully."
 
 # Update /etc/hosts
 log "Updating /etc/hosts..."
@@ -68,26 +67,48 @@ echo "192.168.16.21 server1" >> /etc/hosts
 
 # Install apache2 and squid
 log "Installing apache2 and squid..."
-apt-get update
-apt-get -y upgrade
-apt-get install -y apache2 squid
+eval "apt-get update $REDIRECT"
+eval "apt-get -y upgrade $REDIRECT"
+#eval "apt-get install -y apache2 squid $REDIRECT"
 
 # Start and enable apache2 and squid
 log "Starting and enabling apache2 and squid..."
-systemctl enable apache2
-systemctl start apache2
-systemctl enable squid
-systemctl start squid
+#systemctl enable apache2
+#systemctl start apache2
+#systemctl enable squid
+#systemctl start squid
+
+
+# Check if apache2 is already enabled and active
+if systemctl is-enabled apache2 &>/dev/null && systemctl is-active apache2 &>/dev/null; then
+  log "skip, apache2 is already enabled and running."
+else
+  eval "apt-get install -y apache2 $REDIRECT"
+  eval "systemctl enable apache2 $REDIRECT"
+  eval "systemctl start apache2 $REDIRECT"
+  log "apache2 is enabled and started."
+fi
+
+# Check if squid is already enabled and active
+if systemctl is-enabled squid &>/dev/null && systemctl is-active squid &>/dev/null; then
+  log "skip, squid is already enabled and running."
+else
+  eval "apt-get install -y squid $REDIRECT"
+  eval "systemctl enable squid $REDIRECT"
+  eval "systemctl start squid $REDIRECT"
+  log "squid is enabled and started."
+fi
 
 
 # Configure UFW firewall
 log "Configuring UFW firewall..."
-apt install ufw -y
-systemctl enable ufw
-systemctl start ufw
+eval "apt install ufw -y $REDIRECT"
+#systemctl enable ufw
 
-sudo ufw --force enable 
+eval "sudo ufw --force enable $REDIRECT"
+log "ufw is enabled and started."
 
+eval "{
 ufw allow in on eth0 to any port 22
 ufw allow in on eth1 to any port 22
 ufw allow in on eth0 to any port 80
@@ -96,6 +117,7 @@ ufw allow in on eth0 to any port 3128
 ufw allow in on eth1 to any port 80
 ufw allow in on eth1 to any port 8080
 ufw allow in on eth1 to any port 3128
+}  $REDIRECT"
 
 # List of users
 

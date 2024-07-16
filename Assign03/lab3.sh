@@ -34,11 +34,11 @@ ip1=$(ssh remoteadmin@server1-mgmt --  ip a | grep 192.168.16.3)
 ip2=$(ssh remoteadmin@server1-mgmt --  grep 192.168.16.4 /etc/hosts|grep webhost)
 
 echo "===================================Server1 Check============================================"
-echo "name1: $name1  name2: $name2"
-echo "name3: $name3"
-echo "ip1: $ip1"
-echo "ip2: $ip2"
-echo "check server1 finished"
+#echo "name1: $name1  name2: $name2"
+#echo "name3: $name3"
+#echo "ip1: $ip1"
+#echo "ip2: $ip2"
+#echo "check server1 finished"
 [[ -n "$name1" ]] && [[ "$name2" -eq "loghost" ]] && echo "hostname is right" || echo "hostname is wrong"
 [[ -n "$name3" ]] && echo "/etc/hosts is right" || echo "/etc/hosts is wrong"
 [[ -n "$ip1" ]] && echo "system ip address is right" || echo "system ip address in /etc/hostname is wrong"
@@ -59,11 +59,11 @@ ip1=$(ssh remoteadmin@server2-mgmt --  ip a | grep 192.168.16.4)
 ip2=$(ssh remoteadmin@server2-mgmt --  grep 192.168.16.3 /etc/hosts|grep loghost)
 
 echo "===================================Server2 Check============================================"
-echo "name1: $name1  name2: $name2"
-echo "name3: $name3"
-echo "ip1: $ip1"
-echo "ip2: $ip2"
-echo "check server2 finished"
+#echo "name1: $name1  name2: $name2"
+#echo "name3: $name3"
+#echo "ip1: $ip1"
+#echo "ip2: $ip2"
+#echo "check server2 finished"
 
 [[ -n "$name1" ]] && [[ "$name2" -eq "webhost" ]] && echo "hostname is right" || echo "hostname is wrong"
 [[ -n "$name3" ]] && echo "/etc/hosts is right" || echo "/etc/hosts is wrong"
@@ -81,13 +81,13 @@ echo "===================================Host Check=============================
 desired_name="loghost"
 desired_ip="192.168.16.3"
 entry=$(grep -E "^\s*$desired_ip\s+$desired_name(\s|$)" /etc/hosts)
-echo "$entry"
+#echo "$entry"
 [[ -n "$entry" ]] && echo "/etc/hosts contains loghost 192.168.16.3" || echo "/etc/hosts does not contain loghost 192.168.16.3"
 
 desired_name="webhost"
 desired_ip="192.168.16.4"
 entry=$(grep -E "^\s*$desired_ip\s+$desired_name(\s|$)" /etc/hosts)
-echo "$entry"
+#echo "$entry"
 [[ -n "$entry" ]] && echo "/etc/hosts contains webhost 192.168.16.4" || echo "/etc/hosts does not contain webhost 192.168.16.4"
 
 

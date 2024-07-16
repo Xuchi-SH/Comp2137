@@ -2,8 +2,30 @@
 #Chi Xu 16-Juyl-2024
 #This script runs the configure-host.sh script from the current directory to modify 2 servers and update the local /etc/hosts file
 
+# Parse command-line arguments
+param1=""
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -verbose)
+#           VERBOSE=true
+            echo "verbose is true"
+            param1=" -verbose"
+            ;;
+        *)
+            echo "wrong inputs"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+
+#eval "ssh remoteadmin@server2-mgmt -- /root/configure-host.sh -name webhost -ip 192.168.16.4 -hostentry loghost 192.168.16.3 $param1"
+
+
+echo "===================================Modify Server1============================================"
 scp configure-host.sh remoteadmin@server1-mgmt:/root
-ssh remoteadmin@server1-mgmt -- /root/configure-host.sh -name loghost -ip 192.168.16.3 -hostentry webhost 192.168.16.4
+eval "ssh remoteadmin@server1-mgmt -- /root/configure-host.sh -name loghost -ip 192.168.16.3 -hostentry webhost 192.168.16.4  $param1"
 
 name1=$(ssh remoteadmin@server1-mgmt --  grep loghost /etc/hostname)
 name2=$(ssh remoteadmin@server1-mgmt --  hostname)
@@ -26,8 +48,9 @@ echo "check server1 finished"
 echo
 echo
 
+echo "===================================Modify Server2============================================"
 scp configure-host.sh remoteadmin@server2-mgmt:/root
-ssh remoteadmin@server2-mgmt -- /root/configure-host.sh -name webhost -ip 192.168.16.4 -hostentry loghost 192.168.16.3
+eval "ssh remoteadmin@server2-mgmt -- /root/configure-host.sh -name webhost -ip 192.168.16.4 -hostentry loghost 192.168.16.3  $param1"
 
 name1=$(ssh remoteadmin@server2-mgmt --  grep webhost /etc/hostname)
 name2=$(ssh remoteadmin@server2-mgmt --  hostname)
@@ -50,8 +73,9 @@ echo "check server2 finished"
 echo
 echo
 
-./configure-host.sh -hostentry loghost 192.168.16.3
-./configure-host.sh -hostentry webhost 192.168.16.4
+echo "===================================Modify Host============================================"
+eval "./configure-host.sh -hostentry loghost 192.168.16.3  $param1"
+eval "./configure-host.sh -hostentry webhost 192.168.16.4  $param1"
 
 echo "===================================Host Check============================================"
 desired_name="loghost"

@@ -3,7 +3,7 @@
 # Ignore TERM, HUP, and INT signals
 trap '' TERM HUP INT
 
-# Default values
+# Default values is false
 VERBOSE=false
 
 # Functions to handle verbose output and logging

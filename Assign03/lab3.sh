@@ -1,4 +1,5 @@
 #!/bin/bash
+#Chi Xu 16-Juyl-2024
 #This script runs the configure-host.sh script from the current directory to modify 2 servers and update the local /etc/hosts file
 
 scp configure-host.sh remoteadmin@server1-mgmt:/root

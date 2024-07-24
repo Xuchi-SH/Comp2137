@@ -56,31 +56,31 @@ update_hostentry() {
 	echo "hostentry function $1 $2"
     local desired_name="$1"
     local desired_ip="$2"
-    current_name=$(grep -w "$desired_ip" /etc/hosts | awk '{print $2}')
-    current_ip=$(grep -w "$desired_name" /etc/hosts | awk '{print $1}')
+    current_name=$(grep "$desired_ip" /etc/hosts | awk '{print $2}')
+    current_ip=$(grep "$desired_name" /etc/hosts | awk '{print $1}')
     echo "current ip=$current_ip   current name=$current_name"
-    echo "desire ip=$desired_ip    desire name=$desired_name"
+	echo "desire ip=$desired_ip    desire name=$desired_name"
 	
 
-    if [ -z "$(grep -E "^\s*$desired_ip\s+$desired_name(\s|$)" /etc/hosts)" ]; then
-   	if [ -n "$current_name" ]; then
-    	    echo "desire ip exists. current_name = $current_name"
+	if [ -z "$(grep -E "^\s*$desired_ip\s+$desired_name(\s|$)" /etc/hosts)" ]; then
+   		if [ -n "$current_name" ]; then
+			echo "desire ip exists. current_name = $current_name"
             sudo sed -i "s/$current_name/$desired_name/g" /etc/hosts
             show_change "$current_name is replaced by $desired_name and $desired_ip is already in the hosts file"
-   	else 
-	    if [ -n "$current_ip" ]; then
-		echo "desire name exists. current_ip = $current_ip"
+   		else 
+			if [ -n "$current_ip" ]; then
+				echo "desire name exists. current_ip = $current_ip"
                 sudo sed -i "s/$current_ip/$desired_ip/g" /etc/hosts
                 show_change "$current_ip is replaced by $desired_ip and $desired_name is already in the hosts file"
-	    else
-		echo "desire ip(desired_ip) and name(desired_name) both do not exist. $current_ip and $current_name"
-	        echo "$desired_ip $desired_name" | sudo tee -a /etc/hosts > /dev/null
+			else
+				echo "desire ip(desired_ip) and name(desired_name) both do not exist. $current_ip and $current_name"
+	            echo "$desired_ip $desired_name" | sudo tee -a /etc/hosts > /dev/null
                 show_change "$desired_ip $desired_name are added to the hosts file as a new entry"
-	    fi
+			fi
+		fi
+	else
+		echo "desire ip and name both exist.The entry is already in the hosts file"
 	fi
-    else
-	echo "desire ip and name both exist.The entry is already in the hosts file"
-    fi
 }
 
 # Parse command-line arguments

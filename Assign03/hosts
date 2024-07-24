@@ -1,0 +1,42 @@
+127.0.0.1	localhost
+127.0.1.1	generic-vm3
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+192.168.16.3 loghost
+192.168.16.4 webhost
+172.16.1.1 hostvm-mgmt puppet
+172.16.1.1 hostvm-mgmt puppet
+192.168.16.1 hostvm
+172.16.1.1 hostvm-mgmt puppet
+10.39.182.1 hostvm-bridge
+192.168.16.2 openwrt
+172.16.1.2 openwrt-mgmt
+10.39.182.1 openwrt-wan
+192.168.16.200 server11
+192.168.16.2001 server1
+172.16.1.200 server1-mgmt
+192.168.16.201 server2
+172.16.1.201 server2-mgmt

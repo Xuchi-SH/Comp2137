@@ -37,6 +37,11 @@ RAMSIZE=$(sudo lshw -class memory | grep 'System Memory' -A 3 | tail -1|awk '{ p
 # Get Video Information
 # 1, grep: select the row containing the VIDEO device information; 2, sed: delect uesless characters.
 VIDEOINFO=$(lspci | grep -i "VGA" | sed 's/.*controller: //')
+VMake=$(echo "$VIDEOINFO" | awk '{ print $1 }')
+
+VModel=$(echo "$VIDEOINFO"| awk '{ $1=""; print substr($0,2) }')
+#echo "Video Make:$VMake Model:$VModel"
+
 
 # Get the harddisk information
 # 1, grep: get the section of each harddisk
@@ -184,7 +189,7 @@ Speed: $CURSPD $MAXSPD
 Ram: $RAMSIZE Bytes
 Disk(s):
 $DiskInfo
-Video: $VIDEOINFO
+Video Make:$VMake Model:$VModel
 
 Network Information
 -------------------

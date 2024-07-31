@@ -26,6 +26,7 @@ echo "===================================Modify Server1=========================
 scp configure-host.sh remoteadmin@server1-mgmt:/root
 eval "ssh remoteadmin@server1-mgmt -- /root/configure-host.sh -name loghost -ip 192.168.16.3 -hostentry webhost 192.168.16.4  $param1"
 
+#Get key information remotely
 name1=$(ssh remoteadmin@server1-mgmt --  grep loghost /etc/hostname)
 name2=$(ssh remoteadmin@server1-mgmt --  hostname)
 name3=$(ssh remoteadmin@server1-mgmt --  grep loghost /etc/hosts|grep 192.168.16.3)
@@ -38,6 +39,8 @@ echo "===================================Check Server1k=========================
 #echo "ip1: $ip1"
 #echo "ip2: $ip2"
 #echo "check server1 finished"
+
+#check key informaiton of Server 1
 [[ -n "$name1" ]] && [[ "$name2" -eq "loghost" ]] && echo "hostname is right" || echo "hostname is wrong"
 [[ -n "$name3" ]] && echo "/etc/hosts is right" || echo "/etc/hosts is wrong"
 [[ -n "$ip1" ]] && echo "system ip address is right" || echo "system ip address in /etc/hostname is wrong"
@@ -51,6 +54,7 @@ echo "===================================Modify Server2=========================
 scp configure-host.sh remoteadmin@server2-mgmt:/root
 eval "ssh remoteadmin@server2-mgmt -- /root/configure-host.sh -name webhost -ip 192.168.16.4 -hostentry loghost 192.168.16.3  $param1"
 
+#Get key information remotely
 name1=$(ssh remoteadmin@server2-mgmt --  grep webhost /etc/hostname)
 name2=$(ssh remoteadmin@server2-mgmt --  hostname)
 name3=$(ssh remoteadmin@server2-mgmt --  grep webhost /etc/hosts|grep 192.168.16.4)
@@ -64,6 +68,7 @@ echo "===================================Check Server2==========================
 #echo "ip2: $ip2"
 #echo "check server2 finished"
 
+#check key informaiton of Server 2
 [[ -n "$name1" ]] && [[ "$name2" -eq "webhost" ]] && echo "hostname is right" || echo "hostname is wrong"
 [[ -n "$name3" ]] && echo "/etc/hosts is right" || echo "/etc/hosts is wrong"
 [[ -n "$ip1" ]] && echo "system ip address is right" || echo "system ip address in /etc/hostname is wrong"

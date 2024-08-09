@@ -1,0 +1,32 @@
+- name: for target1-mgmt, install apache2 and ufw
+  hosts: target1-mgmt
+  remote_user: remoteadmin
+  tasks:
+    - name: apache2 and ufw package install
+      apt:
+        name:
+          - apache2
+          - ufw
+        state: present
+        update_cache: yes
+
+    - name: Allow SSH through the firewall
+      ufw:
+        rule: allow
+        name: OpenSSH
+
+    - name: Allow HTTP through the firewall
+      ufw:
+        rule: allow
+        port: '80'
+        proto: tcp
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+
+    - name: Start Apache2 service
+      systemd:
+        name: apache2
+        state: started
+        enabled: yes
